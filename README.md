@@ -1,61 +1,185 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 💼 API Challenge – Laravel & PHP
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This repository contains the implementation of a backend service for a customer billing system, developed as part of a hiring process.
 
-## About Laravel
+## 🚀 Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **PHP 8.4**
+- **Laravel 12**
+- **MySQL**
+- **RESTful API**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🎯 Objective
 
-## Learning Laravel
+Build a RESTful API that allows the management of:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Customers
+- Bills
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+The system is designed to allow external partners to create and manage billing requests for their previously registered clients.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 📋 Requirements
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🧾 Customers
 
-### Premium Partners
+Each customer has:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- Full name
+- CPF or CNPJ (Tax ID)
+- E-mail
 
-## Contributing
+**Constraints:**
+- `email` and `inscription` (CPF/CNPJ) must be unique.
+- API must support creation and listing of customers.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 💸 Bills (Charges)
 
-## Code of Conduct
+Each charge must include:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- `customer_id` (required, must exist)
+- `amount` (positive number, max 2 decimal places)
+- `due_date` (must not be in the past)
+- `description`
 
-## Security Vulnerabilities
+**Additional Requirements:**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- When a charge is created, a notification log must be generated using `Log::info()`.
+- A history of all notifications must be saved to a dedicated table.
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📡 API Endpoints
+
+### Customers
+
+#### `GET /customers`
+
+Returns a list of all registered customers.
+
+**Example response:**
+```json
+[
+    {
+        "id": 1,
+        "name": "Letha Nader",
+        "tax_id": "91835871954",
+        "email": "bertha48@example.net",
+        "created_at": "2025-07-04T12:38:40.000000Z",
+        "updated_at": "2025-07-04T12:38:40.000000Z"
+    },
+    {
+        "id": 2,
+        "name": "Prof. Arturo Cruickshank",
+        "tax_id": "80719908094",
+        "email": "hegmann.hollie@example.org",
+        "created_at": "2025-07-04T12:38:40.000000Z",
+        "updated_at": "2025-07-04T12:38:40.000000Z"
+    },
+    {
+        "id": 3,
+        "name": "Mrs. Ottilie Watsica",
+        "tax_id": "30842087432",
+        "email": "xbosco@example.net",
+        "created_at": "2025-07-04T12:38:40.000000Z",
+        "updated_at": "2025-07-04T12:38:40.000000Z"
+    }
+]
+```
+
+#### `GET /customers/{id}/bills`
+
+Returns the sum of a customer bills in the selected month
+
+**Example response:**
+```json
+{
+    "customer": {
+        "id": 1,
+        "name": "Letha Nader",
+        "tax_id": "91835871954",
+        "email": "bertha48@example.net",
+        "created_at": "2025-07-04T12:38:40.000000Z",
+        "updated_at": "2025-07-04T12:38:40.000000Z"
+    },
+    "month": "2025-07",
+    "total_amount": 0
+}
+```
+
+#### `POST /customers`
+
+Creates a new customer.
+
+**Payload:**
+```json
+{
+  "name": "any name",
+  "email": "any_email@mail.com",
+  "tax_id": "any tax id"
+}
+```
+
+---
+
+### Charges
+
+#### `POST /collections`
+
+Creates a new charge associated with an existing customer.
+
+**Payload:**
+```json
+{
+  "customer_id": "any customer id",
+  "amount": 100.00,
+  "due_date": "2025-01-01",
+  "description": "any description"
+}
+```
+
+---
+
+## 🧪 Tests
+
+This project includes automated feature tests.
+
+To run the tests:
+
+```bash
+php artisan test
+```
+
+---
+
+## ✅ Evaluation Criteria
+
+- Clean, organized, and maintainable code
+- Proper use of Laravel best practices and PSRs
+- Application of SOLID principles
+- Use of Design Patterns where appropriate
+- RESTful design
+- Commit history and Git usage
+- Test coverage and structure
+- Logging and basic observability
+- Optional use of Docker or OpenAPI
+
+---
+
+## 🚫 Out of Scope (Do not implement)
+
+- Authentication
+- Client editing/removal
+- Frontend
+- Asynchronous notifications
+- Revenue dashboard
+- Access logs beyond default Laravel logs
+
+---
+
+## 📝 Final Notes
+
+Please keep your implementation as clean and expressive as possible. Use meaningful commit messages and include any extra comments or documentation that help understand your decisions.

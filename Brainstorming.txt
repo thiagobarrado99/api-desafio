@@ -1,0 +1,72 @@
+Env Requirements:
+- Use PHP 8.4
+- Use Laravel 12.x
+
+Not necessary:
+- Customer edit/destroy
+- Web Frontend
+- API Authentication
+
+Extras:
+- Async notification handling (queue)
+- Additional API endpoint for revenue totals
+- Docker (won't be doing due to lack of time)
+- Access log (Log::debug with request data)
+- API documentation with OpenAPI (use L5-Swagger or Swagger-PHP)
+- Unit/Feature testing
+- Design patterns
+- Arc improvement tips (won't be doing due to lack of time)
+- Error handling
+- Security
+
+==================================
+
+Main goal:
+- Create a RESTful API that enables establishments to create bills for previously registered customers.
+
+Secondary goals:
+- Send notifications to customers when bills are created.
+- Use SOLID
+- Use Design Patterns
+- Use Unit/Feature Testing
+
+Requirements:
+- Must be a RESTful API
+- Customers model should have: Full name, Tax ID and Email. Tax ID and Email should be unique.
+- Bills (AKA. Collections) model should have: Customer ID, Amount (price), Due date and Description. Amount (price) should be a positive double, Due Date should be in the future, Customer ID is required.
+- Bill notifications history should be stored in a separated table.
+
+
+Provided endpoints:
+- GET /customers
+	Accept: application/json
+	Response
+	{
+	 data: [
+	 "id": "any_id",
+	 "name": "any name",
+	 "email": "any_email@mail.com",
+	 "inscription": "any inscription",
+	 "created_at": "2025-06-01 16:00",
+	 "updated_at": null
+	 ]
+	}
+	
+- POST /customers
+	Content-Type: application/json
+	Accept: application/json
+	{
+	 "name": "any name",
+	 "email": "any_email@mail.com",
+	 "inscription": "any inscription",
+	}
+
+- POST /collections
+	Content-Type: application/json
+	Accept: application/json
+	{
+	 "customer_id": "any customer id",
+	 "amount": 100.00,
+	 "due_date": "2025-01-01",
+	 "description": "any description",
+	}

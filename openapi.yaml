@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: API-DESAFIO
+  description: 'API documentation for API-DESAFIO project.'
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost:8000/api'
+    description: 'Local server API'
+paths:
+  /bills:
+    post:
+      tags:
+        - Bills
+      summary: 'Create a new bill'
+      description: 'Creates a new bill for a specific customer.'
+      operationId: createBill
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - customer_id
+                - amount
+                - due_date
+              properties:
+                customer_id:
+                  description: 'ID of the customer to bill'
+                  type: integer
+                  example: 1
+                amount:
+                  description: 'Bill amount'
+                  type: number
+                  format: float
+                  example: 199.99
+                due_date:
+                  description: 'Due date (must be today or later)'
+                  type: string
+                  format: date
+                  example: '2025-07-20'
+                description:
+                  description: 'Optional description of the bill'
+                  type: string
+                  maxLength: 512
+                  example: 'Monthly subscription bill'
+              type: object
+      responses:
+        '201':
+          description: 'Bill created successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: integer, example: 10 }
+                  customer_id: { type: integer, example: 1 }
+                  amount: { type: number, format: float, example: 199.99 }
+                  due_date: { type: string, format: date, example: '2025-07-20' }
+                  description: { type: string, example: 'Monthly subscription bill' }
+                  created_at: { type: string, format: date-time }
+                  updated_at: { type: string, format: date-time }
+                type: object
+        '422':
+          description: 'Validation error (e.g., missing or invalid fields)'
+  /customers:
+    get:
+      tags:
+        - Customers
+      summary: 'List all customers'
+      description: 'Returns a list of all customers.'
+      operationId: listCustomers
+      responses:
+        '200':
+          description: 'List of customers'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties: { id: { type: integer, example: 1 }, name: { type: string, example: 'Thiago Souza' }, tax_id: { type: string, example: '12345678901' }, email: { type: string, format: email, example: thiago@example.com }, created_at: { type: string, format: date-time }, updated_at: { type: string, format: date-time } }
+                  type: object
+    post:
+      tags:
+        - Customers
+      summary: 'Create a new customer'
+      description: 'Creates a new customer with name, tax ID, and email.'
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - tax_id
+                - email
+              properties:
+                name:
+                  type: string
+                  maxLength: 150
+                  example: 'Thiago Souza'
+                tax_id:
+                  type: string
+                  maxLength: 14
+                  pattern: ^\d+$
+                  example: '12345678901'
+                email:
+                  type: string
+                  format: email
+                  maxLength: 256
+                  example: thiago@example.com
+              type: object
+      responses:
+        '201':
+          description: 'Customer created successfully'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: integer, example: 1 }
+                  name: { type: string }
+                  tax_id: { type: string }
+                  email: { type: string }
+                  created_at: { type: string, format: date-time }
+                  updated_at: { type: string, format: date-time }
+                type: object
+        '422':
+          description: 'Validation error'
+  '/customers/{id}/bills':
+    get:
+      tags:
+        - Customers
+      summary: 'Get total bill sum for a customer in a specific year-month'
+      description: 'Returns the total sum of bills for a customer in the selected month.'
+      operationId: getCustomerMonthlyBillTotal
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Customer ID'
+          required: true
+          schema:
+            type: integer
+            example: 1
+        -
+          name: month
+          in: query
+          description: 'Month in YYYY-MM format'
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+            example: 2025-07
+      responses:
+        '200':
+          description: 'Total sum of bills for the customer in the given month'
+          content:
+            application/json:
+              schema:
+                properties:
+                  customer: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: 'Thiago Souza' }, tax_id: { type: string, example: '12345678901' }, email: { type: string, format: email, example: thiago@example.com }, created_at: { type: string, format: date-time }, updated_at: { type: string, format: date-time } }, type: object }
+                  month: { type: string, example: 2025-07 }
+                  total_amount: { type: number, format: float, example: 300 }
+                type: object
+        '422':
+          description: 'Validation error (e.g., customer not found, missing or invalid month query parameter)'
+tags:
+  -
+    name: Bills
+    description: Bills
+  -
+    name: Customers
+    description: Customers

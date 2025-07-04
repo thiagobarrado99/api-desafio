@@ -18,7 +18,8 @@ class CustomerService
         $end = $start->copy()->endOfMonth();
 
         return $customer->bills()
-            ->whereBetween('due_date', [$start, $end])
+            ->whereDate('due_date', '>=', $start->toDateString())
+            ->whereDate('due_date', '<=', $end->toDateString())
             ->sum('amount');
     }
 }

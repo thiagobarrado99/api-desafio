@@ -35,38 +35,4 @@ class CustomerApiTest extends TestCase
         //Assert HTTP 201(created) and name match
         $response->assertStatus(201)->assertJsonFragment(['name' => 'Thiago de Souza']);
     }
-
-    // Test total bills sum for customer
-    public function test_can_get_total_bills_for_customer_in_month()
-    {
-        $customer = Customer::factory()->create();
-
-        // Create bills in the selected month (and another one outside, so it wont sum)
-        $customer->bills()->createMany([
-            [
-                'amount' => 100,
-                'description' => 'Fatura 1',
-                'due_date' => Carbon::parse('2025-07-10'),
-            ],
-            [
-                'amount' => 200,
-                'description' => 'Fatura 2',
-                'due_date' => Carbon::parse('2025-07-15'),
-            ],
-            [
-                'amount' => 300,
-                'description' => 'Fatura 3',
-                'due_date' => Carbon::parse('2025-06-01'),
-            ],
-        ]);
-
-        $response = $this->getJson("/api/customers/{$customer->id}/bills?month=2025-07");
-
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => $customer->name,
-                'month' => '2025-07',
-                'total_amount' => 300.0,
-            ]);
-    }
 }

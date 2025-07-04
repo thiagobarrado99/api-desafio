@@ -33,7 +33,7 @@ Each customer has:
 - E-mail
 
 **Constraints:**
-- `email` and `inscription` (CPF/CNPJ) must be unique.
+- `email` and `tax_id` (CPF/CNPJ) must be unique.
 - API must support creation and listing of customers.
 
 ### 💸 Bills (Charges)

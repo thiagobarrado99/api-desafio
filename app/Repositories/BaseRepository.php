@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Interfaces\RepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BaseRepository implements RepositoryInterface
 {
@@ -20,6 +21,14 @@ class BaseRepository implements RepositoryInterface
     public function all(): Collection
     {
         return $this->model->newQuery()->get();
+    }
+
+    /**
+     * @return LengthAwarePaginator<int, Model>
+     */
+    public function paginate(): LengthAwarePaginator
+    {
+        return $this->model->newQuery()->paginate(100);
     }
 
     /**

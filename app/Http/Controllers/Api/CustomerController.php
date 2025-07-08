@@ -24,32 +24,54 @@ class CustomerController extends Controller
     #[OA\Get(
         path: '/customers',
         operationId: 'listCustomers',
-        summary: 'List all customers',
-        description: 'Returns a list of all customers.',
+        summary: 'List paginated customers',
+        description: 'Returns a paginated list of customers.',
         tags: ['Customers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'page',
+                in: 'query',
+                required: false,
+                description: 'Page number',
+                schema: new OA\Schema(type: 'integer', default: 1)
+            ),
+        ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'List of customers',
+                description: 'Paginated list of customers',
                 content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(
-                        properties: [
-                            new OA\Property(property: 'id', type: 'integer', example: 1),
-                            new OA\Property(property: 'name', type: 'string', example: 'Thiago Souza'),
-                            new OA\Property(property: 'tax_id', type: 'string', example: '12345678901'),
-                            new OA\Property(property: 'email', type: 'string', format: 'email', example: 'thiago@example.com'),
-                            new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
-                            new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
-                        ]
-                    )
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(
+                                type: 'object',
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                    new OA\Property(property: 'name', type: 'string', example: 'Thiago Souza'),
+                                    new OA\Property(property: 'tax_id', type: 'string', example: '12345678901'),
+                                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'thiago@example.com'),
+                                    new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+                                    new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
+                                ]
+                            )
+                        ),
+                        new OA\Property(property: 'current_page', type: 'integer', example: 1),
+                        new OA\Property(property: 'last_page', type: 'integer', example: 5),
+                        new OA\Property(property: 'per_page', type: 'integer', example: 15),
+                        new OA\Property(property: 'total', type: 'integer', example: 73),
+                        new OA\Property(property: 'from', type: 'integer', example: 1),
+                        new OA\Property(property: 'to', type: 'integer', example: 15),
+                    ]
                 )
             )
         ]
     )]
     public function index(): mixed
     {
-        return $this->customers->all();
+        return $this->customers->paginate();
     }
 
     #[OA\Post(

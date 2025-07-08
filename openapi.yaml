@@ -66,19 +66,33 @@ paths:
     get:
       tags:
         - Customers
-      summary: 'List all customers'
-      description: 'Returns a list of all customers.'
+      summary: 'List paginated customers'
+      description: 'Returns a paginated list of customers.'
       operationId: listCustomers
+      parameters:
+        -
+          name: page
+          in: query
+          description: 'Page number'
+          required: false
+          schema:
+            type: integer
+            default: 1
       responses:
         '200':
-          description: 'List of customers'
+          description: 'Paginated list of customers'
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  properties: { id: { type: integer, example: 1 }, name: { type: string, example: 'Thiago Souza' }, tax_id: { type: string, example: '12345678901' }, email: { type: string, format: email, example: thiago@example.com }, created_at: { type: string, format: date-time }, updated_at: { type: string, format: date-time } }
-                  type: object
+                properties:
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: 'Thiago Souza' }, tax_id: { type: string, example: '12345678901' }, email: { type: string, format: email, example: thiago@example.com }, created_at: { type: string, format: date-time }, updated_at: { type: string, format: date-time } }, type: object } }
+                  current_page: { type: integer, example: 1 }
+                  last_page: { type: integer, example: 5 }
+                  per_page: { type: integer, example: 15 }
+                  total: { type: integer, example: 73 }
+                  from: { type: integer, example: 1 }
+                  to: { type: integer, example: 15 }
+                type: object
     post:
       tags:
         - Customers

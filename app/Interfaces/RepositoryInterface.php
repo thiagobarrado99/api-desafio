@@ -5,6 +5,8 @@ interface RepositoryInterface
 {
     public function all(): mixed;
 
+    public function paginate(): mixed;
+
     public function find(int $id): mixed;
 
     /**

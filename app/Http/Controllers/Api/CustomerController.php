@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CustomerTotalRequest;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Interfaces\CustomerRepositoryInterface;
-use App\Models\Customer;
-use App\Services\BillService;
+use Illuminate\Support\Facades\Cache;
 use App\Services\CustomerService;
+use Carbon\Carbon;
+
 use OpenApi\Attributes as OA;
 
 class CustomerController extends Controller
@@ -152,12 +153,36 @@ class CustomerController extends Controller
         $month = $request->query('month');
         $customer = $this->customers->find($id);
 
+        $cacheKey = "customer_{$id}_bills_{$month}";
+
+        // Try to get from cache
+        $cached = Cache::get($cacheKey);
+
+        if (!is_null($cached)) {
+            return response()->json([
+                'customer' => $customer,
+                'month' => $month,
+                'total_amount' => $cached['total'],
+                'calculated_at' => $cached['calculated_at'],
+                'cached' => true,
+            ]);
+        }
+
+        // Not cached, calculate and store
         $total = $customerService->totalInMonth($customer, $month);
+        $calculatedAt = Carbon::now()->toDateTimeString();
+
+        Cache::put($cacheKey, [
+            'total' => $total,
+            'calculated_at' => $calculatedAt,
+        ], now()->addDay()); // cache for 24h
 
         return response()->json([
             'customer' => $customer,
             'month' => $month,
             'total_amount' => $total,
+            'calculated_at' => $calculatedAt,
+            'cached' => false,
         ]);
     }
 }

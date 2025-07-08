@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\BillController;
 use App\Http\Controllers\Api\CustomerController;
-use App\Http\Controllers\Api\RevenueController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('log.requests')->group(function () {

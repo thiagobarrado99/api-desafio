@@ -81,7 +81,7 @@ class BillController extends Controller
             )
         ]
     )]
-    public function store(StoreBillRequest $request, BillService $billService)
+    public function store(StoreBillRequest $request, BillService $billService): mixed
     {
         $data = $request->validated();
         $bill = $this->bills->create($data);

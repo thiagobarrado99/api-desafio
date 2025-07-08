@@ -17,9 +17,11 @@ class CustomerService
         $start = Carbon::parse($month . '-01')->startOfMonth();
         $end = $start->copy()->endOfMonth();
 
-        return $customer->bills()
+        return floatval($customer->bills()
+            ->getQuery() // returns Query\Builder, can cause warning
+            ->toBase()    // convert to base query builder to avoid PHPStan confusion
             ->whereDate('due_date', '>=', $start->toDateString())
             ->whereDate('due_date', '<=', $end->toDateString())
-            ->sum('amount');
+            ->sum('amount'));
     }
 }

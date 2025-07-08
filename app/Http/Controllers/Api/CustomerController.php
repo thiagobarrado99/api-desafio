@@ -46,7 +46,7 @@ class CustomerController extends Controller
             )
         ]
     )]
-    public function index()
+    public function index(): mixed
     {
         return $this->customers->all();
     }
@@ -89,7 +89,7 @@ class CustomerController extends Controller
             )
         ]
     )]
-    public function store(StoreCustomerRequest $request)
+    public function store(StoreCustomerRequest $request): mixed
     {
         $data = $request->validated();
         $customer = $this->customers->create($data);
@@ -147,10 +147,10 @@ class CustomerController extends Controller
             )
         ]
     )]
-    public function customerBills(CustomerTotalRequest $request, CustomerService $customerService, $id)
+    public function customerBills(CustomerTotalRequest $request, CustomerService $customerService, int $id): mixed
     {
         $month = $request->query('month');
-        $customer = Customer::find($id);
+        $customer = $this->customers->find($id);
 
         $total = $customerService->totalInMonth($customer, $month);
 

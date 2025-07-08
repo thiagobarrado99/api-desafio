@@ -11,15 +11,26 @@ class BillNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * @param array<string, mixed> $billData
+     */
     public function __construct(protected array $billData)
     {
     }
 
+    /**
+     * @param mixed $notifiable
+     * @return array<string>
+     */
     public function via($notifiable): array
     {
         return ['mail'];
     }
 
+    /**
+     * @param mixed $notifiable
+     * @return MailMessage
+     */
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)

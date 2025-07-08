@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
 
 class BillService
 {
-    public function createHistoric(Bill $bill, string $payload, BillHistoricTypeEnum $type = BillHistoricTypeEnum::Mailing, BillHistoricStatusEnum $status = BillHistoricStatusEnum::Done)
+    public function createHistoric(Bill $bill, string $payload, BillHistoricTypeEnum $type = BillHistoricTypeEnum::Mailing, BillHistoricStatusEnum $status = BillHistoricStatusEnum::Done): void
     {
         $bill->historic()->create([
             "payload" => $payload,
@@ -20,7 +20,7 @@ class BillService
         ]);
     }
 
-    public function notify(Bill $bill, BillNotification $notification)
+    public function notify(Bill $bill, BillNotification $notification): void
     {
         $bill->customer->notify($notification);
     }

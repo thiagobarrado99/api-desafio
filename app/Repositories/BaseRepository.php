@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\Interfaces\RepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 
 class BaseRepository implements RepositoryInterface
 {
@@ -13,31 +14,46 @@ class BaseRepository implements RepositoryInterface
         $this->model = $model;
     }
 
-    public function all()
+    /**
+     * @return Collection<int, Model>
+     */
+    public function all(): Collection
     {
-        return $this->model->all();
+        return $this->model->newQuery()->get();
     }
 
-    public function find(int $id)
+    /**
+     * @return Model
+     */
+    public function find(int $id): ?Model
     {
-        return $this->model->find($id);
+        return $this->model->newQuery()->find($id);
     }
 
-    public function create(array $data)
+    /**
+     * @return Model
+     */
+    public function create(array $data): Model
     {
-        return $this->model->create($data);
+        return $this->model->newQuery()->create($data);
     }
 
-    public function update(int $id, array $data)
+    /**
+     * @return Model
+     */
+    public function update(int $id, array $data): Model
     {
-        $record = $this->model->findOrFail($id);
+        $record = $this->model->newQuery()->findOrFail($id);
         $record->update($data);
         return $record;
     }
 
-    public function delete(int $id)
+    /**
+     * @return bool
+     */
+    public function delete(int $id): ?bool
     {
-        $record = $this->model->findOrFail($id);
+        $record = $this->model->newQuery()->findOrFail($id);
         return $record->delete();
     }
 }

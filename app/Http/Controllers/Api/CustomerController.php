@@ -155,7 +155,7 @@ class CustomerController extends Controller
 
         $cacheKey = "customer_{$id}_bills_{$month}";
 
-        // Try to get from cache
+        // Get from cache
         $cached = Cache::get($cacheKey);
 
         if (!is_null($cached)) {
@@ -168,14 +168,14 @@ class CustomerController extends Controller
             ]);
         }
 
-        // Not cached, calculate and store
+        // Not cached, calculate now and store
         $total = $customerService->totalInMonth($customer, $month);
         $calculatedAt = Carbon::now()->toDateTimeString();
 
         Cache::put($cacheKey, [
             'total' => $total,
             'calculated_at' => $calculatedAt,
-        ], now()->addDay()); // cache for 24h
+        ], now()->addDay()); // cache for a day
 
         return response()->json([
             'customer' => $customer,
